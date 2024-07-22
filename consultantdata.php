@@ -3,7 +3,7 @@ header('Content-Type: application/json'); // Set the content type to JSON
 
 $servername = "localhost";
 $username = "id22045533_admin";
-$password = "Admin@123";
+$password = "";
 $database = "id22045533_unistudy";
 
 $response = array(); // Initialize an array to hold the response
