@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $username = "id22045533_admin";
-$password = "Admin@123";
+$password = "";
 $database = "id22045533_unistudy";
 
 header('Content-Type: application/json');
