@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $dbUsername = "id22045533_admin"; 
-$dbPassword = "Admin@123"; 
+$dbPassword = ""; 
 $database = "id22045533_unistudy";
 
 try {
