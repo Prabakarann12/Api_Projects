@@ -4,7 +4,7 @@ header('Content-Type: application/json'); // Set the content type to JSON
 
 $servername = "localhost";
 $username = "id22045533_admin";
-$password = "Admin@123";
+$password = "";
 $database = "id22045533_unistudy";
 
 $response = array();
@@ -410,6 +410,63 @@ try {
                         // Encode the response as JSON
                         echo json_encode($response);
                         break;
+                case 'schooldata':
+                    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                        // Debugging output
+                        $response['files'] = $_FILES;
+                        
+                        if (isset($_FILES["School_image_path"])) {
+                            if ($_FILES["School_image_path"]["error"] == 0) {
+                                $ImageFolder = "savefile/"; // Define the image folder path
+                                $ImageName = basename($_FILES["School_image_path"]["name"]);
+                                $ImageTemp = $_FILES["School_image_path"]["tmp_name"];
+                                $ImagePath = $ImageFolder . $ImageName;
+                    
+                                if (!file_exists($ImageFolder)) {
+                                    mkdir($ImageFolder, 0755, true);
+                                }
+                    
+                                if (move_uploaded_file($ImageTemp, $ImagePath)) {
+                                    // Collect the other form data
+                                    $UniversitiesTitle = $_POST['School_title'];
+                                    $UniversitiesSubtitle = $_POST['School_subtitle'];
+                                    $UniversitiesSubtitle = $_POST['school_website'];
+                    
+                                    // Prepare the query to insert the data into the database
+                                    $stmt = $databaseConnection->prepare("INSERT INTO `School_datalist` (`School_image_path`, `School_title`, `School_subtitle`,`school_website`) VALUES (:School_image_path, :School_title, :School_subtitle , :school_website)");
+                                    $stmt->bindParam(':School_image_path', $ImagePath);
+                                    $stmt->bindParam(':School_title', $UniversitiesTitle);
+                                    $stmt->bindParam(':School_subtitle', $UniversitiesSubtitle);
+                                    $stmt->bindParam(':school_website', $UniversitiesSubtitle);
+                    
+                                    // Execute the query
+                                    if ($stmt->execute()) {
+                                        $response['status'] = "Data and image uploaded and inserted into database.";
+                                    } else {
+                                        $response['status'] = "Failed to insert data into database.";
+                                    }
+                                } else {
+                                    $response['status'] = "Failed to move uploaded file.";
+                                }
+                            } else {
+                                $response['status'] = "Upload error: " . $_FILES["image_path"]["error"];
+                            }
+                        } else {
+                            $response['status'] = "No file uploaded.";
+                        }
+                    } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
+                        // Prepare the query to fetch data from the database
+                        $stmt = $databaseConnection->prepare("SELECT `id`, `School_image_path`, `School_title`, `School_subtitle`,`school_website` FROM `School_datalist`");
+                        $stmt->execute();
+                    
+                        // Fetch all the results
+                        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    
+                        // Return the results as JSON
+                        $response['data'] = $results;
+                    }  
+                    echo json_encode($response);
+                    break;      
                 
                     default:
                         $response['status'] = "Invalid action";
